@@ -1,0 +1,417 @@
+swagger: "2.0"
+info:
+  description: "Documentation of API Polish Minecraft server Kaczkoland.PL"
+  version: "2.0.0"
+  title: "api.kaczkoland.pl"
+  termsOfService: "http://kaczkoland.pl/regulamin/"
+  contact:
+    email: "kaczkoland@rkuba.pl"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "api.kaczkoland.pl"
+basePath: "/v2"
+tags:
+- name: "playerStats"
+  description: "Player/s statistics"
+  externalDocs:
+    description: "Online statistics"
+    url: "https://kaczkoland.pl/statystyki"
+schemes:
+- "https"
+paths:
+  /u/{playerName}:
+    get:
+      tags:
+      - "playerStats"
+      summary: "Returns player statistics"
+      description: ""
+      operationId: "player"
+      parameters:
+      - name: "playerName"
+        in: "path"
+        description: "Player's Minecraft nickname"
+        required: true
+        type: "string"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/PlayerStats"
+        "500":
+          description: "Server error"
+  /getSumData:
+    get:
+      tags:
+      - "playerStats"
+      summary: "Returns statistics of all players"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/SumData"
+        "500":
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/Error"
+  /getTopPlayers:
+    get:
+      tags:
+      - "playerStats"
+      summary: "Returns top players in different categories"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/TopPlayers"
+        "500":
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/Error"
+  /getPlayers:
+    get:
+      tags:
+      - "playerStats"
+      summary: "Searches for player name"
+      parameters:
+      - name: "playerName"
+        in: "query"
+        description: "Player's Minecraft nickname, **SEARCHES ONLY IF OVER 2 CHARACTERS!**"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "Successful operation (returns max 5 nicknames)"
+          schema:
+            $ref: "#/definitions/Players"
+        "500":
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/Error"
+#   petstore_auth:
+#     type: "oauth2"
+#     authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+#     flow: "implicit"
+#     scopes:
+#       write:pets: "modify pets in your account"
+#       read:pets: "read your pets"
+#   api_key:
+#     type: "apiKey"
+#     name: "api_key"
+#     in: "header"
+definitions:
+  PlayerStats:
+    type: object
+    properties:
+      success:
+        type: "boolean"
+        example: true
+      auth:
+          type: object
+          properties:
+            lastlogin:
+              type: "integer"
+              format: "int64"
+              example: 1644149466952
+              description: "Last login date"
+            regdate:
+              type: "integer"
+              format: "int64"
+              example: 1640354276433
+              description: "Registration date"
+            premium:
+              description: "Returns if player has automatic login (premium) [true] or cracked premium (password) [false]"
+              type: "boolean"
+              example: true
+      groups:
+          type: array
+          # properties:
+          items:
+            $ref: "#/definitions/Group"
+      status:
+        type: object
+        properties:
+          online:
+            type: "boolean"
+            example: true
+          server:
+            type: "string"
+            example: "survival"
+      stats:
+        type: object
+        properties:
+          survival:
+            type: object
+            properties:
+              uuid:
+                type: "string"
+                format: "uuid"
+                example: "330e5804-f0a7-3269-a2c9-bdb3f0f2fdf0"
+              minedBlocks:
+                type: "number"
+                format: "int32"
+                example: 420
+              placedBlocks:
+                type: "number"
+                format: "int32"
+                example: 420
+              craftedItems:
+                type: "number"
+                format: "int32"
+                example: 420
+              allDeaths:
+                type: "number"
+                format: "int32"
+                example: 420
+              killedMobs:
+                type: "number"
+                format: "int32"
+                example: 420
+              walkedDistance:
+                type: "number"
+                format: "int32"
+                example: 4200
+                description: "In centimeters"
+              playedTime:
+                type: "number"
+                format: "int32"
+                example: 420
+                description: "In minutes"
+              killedPlayers:
+                type: "number"
+                format: "int32"
+                example: 420
+              money:
+                type: "number"
+                format: "int32"
+                example: 4200
+              killers:
+                type: array
+                items:
+                  $ref: "#/definitions/KillerPlayer"
+              killed:
+                type: array
+                items:
+                  $ref: "#/definitions/KilledPlayer"
+    required:  
+      - success
+  KillerPlayer:
+    type: object
+    properties:
+      killerUUID:
+        type: "string"
+        format: "uuid"
+        example: "330e5804-f0a7-3269-a2c9-bdb3f0f2fdf0"
+      killerName:
+        type: "string"
+        example: "Dream"
+      group:
+        type: object
+        properties:
+          prefix:
+            $ref: "#/definitions/RankGroup"
+  KilledPlayer:
+    type: object
+    properties:
+      killedUUID:
+        type: "string"
+        format: "uuid"
+        example: "330e5804-f0a7-3269-a2c9-bdb3f0f2fdf0"
+      killedName:
+        type: "string"
+        example: "Dream"
+      group:
+        type: object
+        properties:
+          prefix:
+            $ref: "#/definitions/RankGroup"
+  Group:
+    type: object
+    properties:
+      id:
+        type: "string"
+        example: "wlasciciel"
+      expiry:
+        type: "integer"
+        format: "int32"
+        example: 1644487206
+        description: "Returns date or -1 if pernament rank"
+      group:
+        $ref: "#/definitions/RankGroup"
+  RankGroup:
+    type: object
+    properties:
+      prefix:
+        type: object
+        properties:
+          color:
+            type: "string"
+            example: "#55FF55"
+            description: "Color (HEX)"
+          name:
+            type: "string"
+            example: "VIP"
+            description: "Rank's prefix"
+      weight:
+          type: "number"
+          format: "int32"
+          example: 3
+  SumData:
+    type: object
+    properties:
+      success:
+        type: "boolean"
+        example: true
+      data:
+        type: object
+        properties:
+          minedBlocks:
+            type: "number"
+            format: "int32"
+            example: 420
+          placedBlocks:
+            type: "number"
+            format: "int32"
+            example: 420
+          craftedItems:
+            type: "number"
+            format: "int32"
+            example: 420
+          allDeaths:
+            type: "number"
+            format: "int32"
+            example: 420
+          killedMobs:
+            type: "number"
+            format: "int32"
+            example: 420
+          walkedDistance:
+            type: "number"
+            format: "float"
+            example: 420.69
+          playedTime:
+            type: "number"
+            format: "int32"
+            example: 4200
+          minedDiamonds:
+            type: "number"
+            format: "int32"
+            example: 420
+          totalUsers:
+            type: "number"
+            format: "int32"
+            example: 420
+          money:
+            type: "number"
+            format: "float"
+            example: 420.69
+  TopPlayers:
+    type: object
+    properties:
+      success:
+        type: "boolean"
+        example: true
+      data:
+        type: object
+        properties:
+          minedBlocks:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTop"
+              description: "maximmum 5 elements"
+          placedBlocks:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTop"
+              description: "maximmum 5 elements"
+          craftedItems:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTop"
+              description: "maximmum 5 elements"
+          alLDeaths:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTop"
+              description: "maximmum 5 elements"
+          killedMobs:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTop"
+              description: "maximmum 5 elements"
+          walkedDistance:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTopFloat"
+              description: "maximmum 5 elements"
+          playedTime:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTop"
+              description: "maximmum 5 elements"
+          killedPlayers:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTop"
+              description: "maximmum 5 elements"
+          money:
+              type: array
+              items:
+                $ref: "#/definitions/CategoryTopFloat"
+              description: "maximmum 5 elements"
+  CategoryTop:
+    type: object
+    properties:
+      player:
+        type: object
+        properties:
+          name:
+            type: "string"
+            example: "rkubapl"
+          rank:
+            $ref: "#/definitions/Group"
+      value:
+        type: "number"
+        format: "int32"
+        example: 4200
+  CategoryTopFloat:
+    type: object
+    properties:
+      player:
+        type: object
+        properties:
+          name:
+            type: "string"
+            example: "rkubapl"
+          rank:
+            $ref: "#/definitions/Group"
+      value:
+        type: "number"
+        format: "float"
+        example: 4200.69
+  Error:
+    type: object
+    properties:
+      success:
+        type: "boolean"
+        example: false
+      error:
+        type: "string"
+        example: "Failed to get data from database!"
+  Players:
+    type: object
+    properties:
+      success:
+        type: "boolean"
+        example: true
+      data:
+        type: string
+        example: ["rkubapl", "rkubaplYT", "rkubaplToKoks", "rkubaplPodPrysznicem", "rkubaLolz"]
+        description: "Maximum 5"
+# externalDocs:
+#   description: "Find out more about Swagger"
+#   url: "http://swagger.io"
