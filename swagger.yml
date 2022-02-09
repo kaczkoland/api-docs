@@ -92,6 +92,20 @@ paths:
           description: "Server error"
           schema:
             $ref: "#/definitions/Error"
+  /playerList:
+    get:
+      tags:
+      - "playerStats"
+      summary: "Get playerList"
+      responses:
+        "200":
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/PlayerList"
+        "500":
+          description: "Server error"
+          schema:
+            $ref: "#/definitions/Error"
 #   petstore_auth:
 #     type: "oauth2"
 #     authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
@@ -412,6 +426,18 @@ definitions:
         type: string
         example: ["rkubapl", "rkubaplYT", "rkubaplToKoks", "rkubaplPodPrysznicem", "rkubaLolz"]
         description: "Maximum 5"
+  PlayerList:
+    type: object
+    properties:
+      success:
+        type: "boolean"
+        example: true
+      data:
+         type: object
+         additionalProperties:
+            description: "Player nickname as key"
+            type: string
+            example: "survival"
 # externalDocs:
 #   description: "Find out more about Swagger"
 #   url: "http://swagger.io"
