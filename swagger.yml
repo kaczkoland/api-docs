@@ -194,7 +194,7 @@ definitions:
                 type: "number"
                 format: "int32"
                 example: 420
-                description: "In minutes"
+                description: "In miliseconds ehh"
               killedPlayers:
                 type: "number"
                 format: "int32"
